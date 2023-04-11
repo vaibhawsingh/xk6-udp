@@ -27,7 +27,7 @@ Then:
 ## Example
 
 ```javascript
-import tcp from 'k6/x/udp';
+import udp from 'k6/x/udp';
 import { check } from 'k6';
 
 const conn = udp.connect('host:port');
