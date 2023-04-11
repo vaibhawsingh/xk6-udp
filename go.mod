@@ -1,4 +1,4 @@
-module github.com/NAlexandrov/xk6-tcp
+module github.com/amitmankikar/xk6-udp
 
 go 1.16
 
