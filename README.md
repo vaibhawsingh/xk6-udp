@@ -1,6 +1,6 @@
-# xk6-tcp
+# xk6-udp
 
-A k6 extension for sending strings to TCP port
+A k6 extension for sending strings to UDP port
 
 ## Build
 
@@ -21,23 +21,23 @@ Then:
 
   ```shell
   xk6 build master \
-    --with github.com/NAlexandrov/xk6-tcp
+    --with github.com/amitmankikar/xk6-udp
   ```
 
 ## Example
 
 ```javascript
-import tcp from 'k6/x/tcp';
+import tcp from 'k6/x/udp';
 import { check } from 'k6';
 
-const conn = tcp.connect('host:port');
+const conn = udp.connect('host:port');
 
 export default function () {
-  tcp.writeLn(conn, 'Say Hello');
-  let res = String.fromCharCode(...tcp.read(conn, 1024))
+  udp.writeLn(conn, 'Say Hello');
+  let res = String.fromCharCode(...udp.read(conn, 1024))
   check (res, {
     'verify ag tag': (res) => res.includes('Hello')
   });
-  tcp.close(conn);
+  udp.close(conn);
 }
 ```
