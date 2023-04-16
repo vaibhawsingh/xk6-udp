@@ -38,7 +38,7 @@ func (udp *UDP) Connect(addr string) (net.Conn, error) {
 func (udp *UDP) WritePkt(conn net.Conn, key uint64) error {
 
 	var r REQ
-	r.SetHeader(3, 0, uint32(rand.Int()))
+	r.SetHeader(2, 0, 7)
 	r.key = key
 	_, err := conn.Write([]byte(fmt.Sprintf("%v", r)))
 	if err != nil {
