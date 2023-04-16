@@ -1,79 +1,96 @@
 package udp
 
 import (
-	"net"
-    "fmt"
-	"math/rand"
-	"go.k6.io/k6/js/modules"
+        "bytes"
+        "encoding/binary"
+        "net"
+        "go.k6.io/k6/js/modules"
 
 )
 
 func init() {
-	modules.Register("k6/x/udp", new(UDP))
+        modules.Register("k6/x/udp", new(UDP))
 }
 
 type UDP struct{}
 
 type REQ struct {
-	header uint32
-	key    uint64
+        header uint32
+        key    uint64
 }
 
 func (c *REQ) SetHeader(ver uint32, flag uint32, seq uint32) {
-	c.header |= (ver & 0x0000000f)
-	c.header |= (flag << 8 & 0x00000f0)
-	c.header |= (seq << 16 & 0xffffff00)
+        c.header = (seq ) | flag<<28 | ver <<24
 }
 
 
 func (udp *UDP) Connect(addr string) (net.Conn, error) {
-	conn, err := net.Dial("udp", addr)
-	if err != nil {
-		return nil, err
-	}
+        conn, err := net.Dial("udp", addr)
+        if err != nil {
+                return nil, err
+        }
 
-	return conn, nil
+        return conn, nil
 }
 
-func (udp *UDP) WritePkt(conn net.Conn, key uint64) error {
+func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key uint64) error {
 
-	var r REQ
-	r.SetHeader(2, 0, 7)
-	r.key = key
-	_, err := conn.Write([]byte(fmt.Sprintf("%v", r)))
-	if err != nil {
-		return err
-	}
+        var r REQ
+        r.SetHeader(ver, flag, seq)
+        r.key = key
+        buf := &bytes.Buffer{}
+        err := binary.Write(buf, binary.BigEndian, r)
 
-	return nil
+        _, err = conn.Write(buf.Bytes())
+        //_, err := conn.Write([]byte(fmt.Sprintf("%d", r)))
+        if err != nil {
+                return err
+        }
+
+        return nil
 }
 
 func (udp *UDP) Write(conn net.Conn, data []byte) error {
-	_, err := conn.Write(data)
-	if err != nil {
-		return err
-	}
+        _, err := conn.Write(data)
+        if err != nil {
+                return err
+        }
 
-	return nil
+        return nil
+}
+
+func (udp *UDP) ReadPkt(conn net.Conn, seq int, size int) ([]byte, error) {
+        buf := make([]byte, size)
+        _, err := conn.Read(buf)
+        if err != nil {
+                return nil, err
+        }
+        var seq1 uint32
+        seq1 = uint32(buf[3]) + (uint32(buf[2]) <<8) + (uint32(buf[1])<<16)
+        if uint32(seq) == seq1 {
+                return []byte("Success"), nil
+        }
+        return []byte("Fail"), nil
 }
 
 func (udp *UDP) Read(conn net.Conn, size int) ([]byte, error) {
-	buf := make([]byte, size)
-	_, err := conn.Read(buf)
-	if err != nil {
-		return nil, err
-	}
-	return buf, nil
+        buf := make([]byte, size)
+        _, err := conn.Read(buf)
+        if err != nil {
+                return nil, err
+        }
+        return buf, nil
 }
 
+
 func (udp *UDP) WriteLn(conn net.Conn, data []byte) error {
-	return udp.Write(conn, append(data, []byte("\n")...))
+        return udp.Write(conn, append(data, []byte("\n")...))
 }
 
 func (udp *UDP) Close(conn net.Conn) error {
-	err := conn.Close()
-	if err != nil {
-		return err
-	}
-	return nil
+        err := conn.Close()
+        if err != nil {
+                return err
+        }
+        return nil
 }
