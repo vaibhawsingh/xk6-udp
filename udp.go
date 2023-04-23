@@ -62,19 +62,11 @@ func (udp *UDP) Write(conn net.Conn, data []byte) error {
 
 func (udp *UDP) ReadPkt(conn net.Conn, seq int, size int) ([]byte, error) {
         buf := make([]byte, size)
-        ch := time.After(time.Second * 1)
-        L:
-        for {
-                select {
-                        case <-ch:
-                                break L // have to use a label or it will just break select
-                        default:
-                                _, err := conn.Read(buf)
-                                if err != nil {
-                                        return nil, err
-                                }
-                }
-        }
+        conn.SetReadDeadline(time.Now().Add(1 * time.Second))
+        _, err := conn.Read(buf)
+       if err != nil {
+        return nil, err
+       }
 
         var seq1 uint32
         seq1 = uint32(buf[3]) + (uint32(buf[2]) <<8) + (uint32(buf[1])<<16)
