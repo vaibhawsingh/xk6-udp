@@ -88,9 +88,9 @@ func (udp *UDP) ReadPktEx(conn net.Conn, seq int, size int) ([]byte, error) {
         var seq1 uint32
         seq1 = uint32(buf[3]) + (uint32(buf[2]) <<8) + (uint32(buf[1])<<16)
         if uint32(seq) == seq1 {
-                return buf, true
+                return buf, nil
         }
-        return nil, false
+        return nil, nil
 }
 
 
