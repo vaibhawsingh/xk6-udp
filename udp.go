@@ -77,20 +77,20 @@ func (udp *UDP) ReadPkt(conn net.Conn, seq int, size int) ([]byte, error) {
 }
 
 
-func (udp *UDP) ReadPktEx(conn net.Conn, seq int, size int) ([]byte, error) {
+func (udp *UDP) ReadPktEx(conn net.Conn, seq int, size int) ([]byte) {
         buf := make([]byte, size)
         conn.SetReadDeadline(time.Now().Add(1 * time.Second))
         _, err := conn.Read(buf)
        if err != nil {
-        return nil, err
+        return nil
        }
 
         var seq1 uint32
         seq1 = uint32(buf[3]) + (uint32(buf[2]) <<8) + (uint32(buf[1])<<16)
         if uint32(seq) == seq1 {
-                return buf, nil
+                return buf
         }
-        return nil, nil
+        return nil
 }
 
 
