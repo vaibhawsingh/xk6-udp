@@ -2,6 +2,7 @@ import udp from 'k6/x/udp';
 import { check, fail } from 'k6';
 import { SharedArray } from 'k6/data';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
+import bigInt from 'https://peterolson.github.io/BigInteger.js/BigInteger.min.js';
 
 
 const csvData = new SharedArray("another data name", function() {
@@ -29,7 +30,7 @@ export default function () {
 
 function validate(queryStr) {
 
-        var query = Number(queryStr)
+        var query = bigInt(String(queryStr).substring(3), 16);
         //console.log(query);
 
   const conn1 = udp.connect('localhost:14755');
