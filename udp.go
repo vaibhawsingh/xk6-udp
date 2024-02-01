@@ -16,14 +16,21 @@ func init() {
 type UDP struct{}
 
 type REQ struct {
-        header uint32
-        key    uint64
+        magic       uint16  /* set to s_magic */
+        version     uint16
+        flags       uint16 /* Flag giving more details about if active segment filtering is needed or not etc */
+        n_ids       uint16
+        req_timeout uint32
+        key         string
 }
 
 func (c *REQ) SetHeader(ver uint32, flag uint32, seq uint32) {
-        c.header = (seq ) | flag<<28 | ver <<24
+        c.version = 0x0001
+        c.magic   = 0xABCD
+        c.flags   = 0
+        c.n_ids   = 1
+        c.req_timeout =  0
 }
-
 
 func (udp *UDP) Connect(addr string) (net.Conn, error) {
         conn, err := net.Dial("udp", addr)
@@ -34,7 +41,7 @@ func (udp *UDP) Connect(addr string) (net.Conn, error) {
         return conn, nil
 }
 
-func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key uint64) error {
+func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key string) error {
 
         var r REQ
         r.SetHeader(ver, flag, seq)
@@ -72,8 +79,6 @@ func (udp *UDP) ReadPkt(conn net.Conn, seq int, size int) ([]byte, error) {
         seq1 = uint32(buf[3]) + (uint32(buf[2]) <<8) + (uint32(buf[1])<<16)
         if uint32(seq) == seq1 {
                 return []byte("Success"), nil
-        }
-        return []byte("Fail"), nil
 }
 
 
