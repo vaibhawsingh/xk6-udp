@@ -44,7 +44,12 @@ func (udp *UDP) Connect(addr string) (net.Conn, error) {
 func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key string) error {
 
         var r REQ
-        r.SetHeader(ver, flag, seq)
+        //r.SetHeader(ver, flag, seq)
+        r.version = 0x0001
+        r.magic   = 0xABCD
+        r.flags   = 0
+        r.n_ids   = 1
+        r.req_timeout =  0
         r.key = key
         buf := &bytes.Buffer{}
         err := binary.Write(buf, binary.BigEndian, r)
