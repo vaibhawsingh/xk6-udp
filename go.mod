@@ -1,4 +1,4 @@
-module github.com/amitmankikar/xk6-udp
+module github.com/vaibhawsingh/xk6-udp
 
 go 1.16
 
