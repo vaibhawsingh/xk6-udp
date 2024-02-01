@@ -79,6 +79,8 @@ func (udp *UDP) ReadPkt(conn net.Conn, seq int, size int) ([]byte, error) {
         seq1 = uint32(buf[3]) + (uint32(buf[2]) <<8) + (uint32(buf[1])<<16)
         if uint32(seq) == seq1 {
                 return []byte("Success"), nil
+        }
+        return []byte("Fail"), nil
 }
 
 
