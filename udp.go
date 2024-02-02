@@ -21,7 +21,8 @@ type REQ struct {
         flags       uint16 /* Flag giving more details about if active segment filtering is needed or not etc */
         n_ids       uint16
         req_timeout uint32
-        key         string
+        request_id  [16]byte
+        key         [17]byte
 }
 
 func (c *REQ) SetHeader(ver uint32, flag uint32, seq uint32) {
@@ -41,7 +42,7 @@ func (udp *UDP) Connect(addr string) (net.Conn, error) {
         return conn, nil
 }
 
-func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key string) error {
+func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key [17]byte) error {
 
         var r REQ
         //r.SetHeader(ver, flag, seq)
