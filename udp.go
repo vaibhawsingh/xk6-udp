@@ -53,7 +53,7 @@ func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, k
         r.req_timeout =  0
         r.key = key
         buf := &bytes.Buffer{}
-        err := binary.Write(buf, binary.BigEndian, r)
+        err := binary.Write(buf, binary.LittleEndian, r)
 
         _, err = conn.Write(buf.Bytes())
         //_, err := conn.Write([]byte(fmt.Sprintf("%d", r)))
