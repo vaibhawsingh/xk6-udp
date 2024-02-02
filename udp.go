@@ -22,7 +22,7 @@ type REQ struct {
         n_ids       uint16
         req_timeout uint32
         request_id  [16]byte
-        key         [17]byte
+        key         uint32
 }
 
 func (c *REQ) SetHeader(ver uint32, flag uint32, seq uint32) {
@@ -42,7 +42,7 @@ func (udp *UDP) Connect(addr string) (net.Conn, error) {
         return conn, nil
 }
 
-func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key [17]byte) error {
+func (udp *UDP) WritePktEx(conn net.Conn, ver uint32, flag uint32, seq uint32, key uint32) error {
 
         var r REQ
         //r.SetHeader(ver, flag, seq)
